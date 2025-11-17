@@ -1,8 +1,11 @@
+# backend/render.yaml
 services:
   - type: web
     name: kedia-crm-backend
-    env: node
+    runtime: node
     plan: free
+    region: oregon  # or your preferred region
+    rootDirectory: backend
     buildCommand: npm install
     startCommand: npm start
     envVars:
@@ -10,3 +13,5 @@ services:
         value: production
       - key: JWT_SECRET
         generateValue: true
+      - key: MONGODB_URI
+        sync: false
