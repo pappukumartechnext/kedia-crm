@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kedia CRM - Task Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-header">
+            <h2><i class="fas fa-tasks me-2"></i>Kedia CRM</h2>
+            <p class="text-muted">Task Management System</p>
+        </div>
+        <form id="loginForm">
+            <div class="mb-3">
+                <label for="loginEmail" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="loginEmail" required>
+            </div>
+            <div class="mb-3">
+                <label for="loginPassword" class="form-label">Password</label>
+                <input type="password" class="form-control" id="loginPassword" required>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="rememberMe">
+                <label class="form-check-label" for="rememberMe">Remember me</label>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+        <div class="mt-3 text-center">
+            <p class="mb-0">Demo Accounts:</p>
+            <p class="mb-0">Admin: admin@kedia.com / admin123</p>
+            <p class="mb-0">Staff: staff@kedia.com / staff123</p>
+        </div>
+    </div>
+
+    <!-- Main Application (Initially Hidden) -->
+    <div id="appScreen" style="display: none;">
+        <!-- Navigation Bar -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#"><i class="fas fa-tasks me-2"></i>Kedia CRM</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i> <span id="currentUserName">Admin User</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" id="profileLink"><i class="fas fa-user me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="#" id="logoutLink"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                    <div class="position-sticky pt-3">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#" data-section="dashboard">
+                                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-section="tasks">
+                                    <i class="fas fa-tasks"></i> Tasks
+                                </a>
+                            </li>
+                            <li class="nav-item admin-only">
+                                <a class="nav-link" href="#" data-section="staff">
+                                    <i class="fas fa-users"></i> Staff Management
+                                </a>
+                            </li>
+                            <li class="nav-item admin-only">
+                                <a class="nav-link" href="#" data-section="admins">
+                                    <i class="fas fa-user-shield"></i> Admin Management
+                                </a>
+                            </li>
+                            <li class="nav-item admin-only">
+                                <a class="nav-link" href="#" data-section="reports">
+                                    <i class="fas fa-chart-bar"></i> Reports
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <main class="col-md-9 ms-sm-auto col-lg-10 main-content">
+                    <!-- Dashboard Section -->
+                    <div id="dashboardSection" class="content-section">
+                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                            <h1 class="h2">Dashboard</h1>
+                            <div class="btn-toolbar mb-2 mb-md-0">
+                                <div class="btn-group me-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stats Cards -->
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <div class="card stats-card total-tasks">
+                                    <div class="card-body">
+                                        <i class="fas fa-tasks fa-2x text-primary"></i>
+                                        <div class="number" id="totalTasks">0</div>
+                                        <p>Total Tasks</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card stats-card pending-tasks">
+                                    <div class="card-body">
+                                        <i class="fas fa-clock fa-2x text-warning"></i>
+                                        <div class="number" id="pendingTasks">0</div>
+                                        <p>Pending Tasks</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card stats-card completed-tasks">
+                                    <div class="card-body">
+                                        <i class="fas fa-check-circle fa-2x text-success"></i>
+                                        <div class="number" id="completedTasks">0</div>
+                                        <p>Completed Tasks</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card stats-card completion-percent">
+                                    <div class="card-body">
+                                        <i class="fas fa-chart-pie fa-2x text-danger"></i>
+                                        <div class="number" id="completionPercent">0%</div>
+                                        <p>Completion %</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Charts -->
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="card">
+                                    <div class="card-header">
+                                        Task Status Overview
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="chart-container">
+                                            <canvas id="taskStatusChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        Priority Distribution
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="chart-container">
+                                            <canvas id="priorityChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Tasks -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span>Recent Tasks</span>
+                                        <a href="#" class="btn btn-sm btn-primary" data-section="tasks">View All</a>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>SL No.</th>
+                                                        <th>Task</th>
+                                                        <th>Given By</th>
+                                                        <th>Given To</th>
+                                                        <th>Target Date</th>
+                                                        <th>Priority</th>
+                                                        <th>Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="recentTasksTable">
+                                                    <!-- Recent tasks will be populated here -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tasks Section -->
+                    <div id="tasksSection" class="content-section" style="display: none;">
+                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                            <h1 class="h2">Task Management</h1>
+                            <div class="btn-toolbar mb-2 mb-md-0">
+                                <button class="btn btn-sm btn-primary me-2" id="addTaskBtn">
+                                    <i class="fas fa-plus me-1"></i> Add Task
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Task Filters -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label for="searchTask" class="form-label">Search</label>
+                                        <input type="text" class="form-control" id="searchTask" placeholder="Search tasks...">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="filterStatus" class="form-label">Status</label>
+                                        <select class="form-select" id="filterStatus">
+                                            <option value="">All</option>
+                                            <option value="Pending">Pending</option>
+                                            <option value="In Progress">In Progress</option>
+                                            <option value="Completed">Completed</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="filterPriority" class="form-label">Priority</label>
+                                        <select class="form-select" id="filterPriority">
+                                            <option value="">All</option>
+                                            <option value="High">High</option>
+                                            <option value="Medium">Medium</option>
+                                            <option value="Low">Low</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="filterGivenBy" class="form-label">Given By</label>
+                                        <select class="form-select" id="filterGivenBy">
+                                            <option value="">All</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-end">
+                                        <button class="btn btn-outline-secondary w-100" id="resetFilters">Reset Filters</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tasks Table -->
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="tasksTable">
+                                        <thead>
+                                            <tr>
+                                                <th>SL No.</th>
+                                                <th>Task</th>
+                                                <th>Date of Allocation</th>
+                                                <th>Given By</th>
+                                                <th>Given To</th>
+                                                <th>Target Date</th>
+                                                <th>Steps Taken</th>
+                                                <th>Last Updated</th>
+                                                <th>Next Update</th>
+                                                <th>Priority</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Tasks will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Staff Management Section (Admin Only) -->
+                    <div id="staffSection" class="content-section admin-only" style="display: none;">
+                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                            <h1 class="h2">Staff Management</h1>
+                            <div class="btn-toolbar mb-2 mb-md-0">
+                                <button class="btn btn-sm btn-primary me-2" id="addStaffBtn">
+                                    <i class="fas fa-plus me-1"></i> Add Staff
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Staff Table -->
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="staffTable">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Phone</th>
+                                                <th>Department</th>
+                                                <th>Date Added</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Staff will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Admin Management Section (Admin Only) -->
+                    <div id="adminsSection" class="content-section admin-only" style="display: none;">
+                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                            <h1 class="h2">Admin Management</h1>
+                            <div class="btn-toolbar mb-2 mb-md-0">
+                                <button class="btn btn-sm btn-primary me-2" id="addAdminBtn">
+                                    <i class="fas fa-plus me-1"></i> Add Admin
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Admin Table -->
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="adminsTable">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Phone</th>
+                                                <th>Date Added</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Admins will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reports Section (Admin Only) -->
+                    <div id="reportsSection" class="content-section admin-only" style="display: none;">
+                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                            <h1 class="h2">Reports & Analytics</h1>
+                            <div class="btn-toolbar mb-2 mb-md-0">
+                                <div class="btn-group me-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">Export PDF</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">Export Excel</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        Task Completion Trends
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="chart-container">
+                                            <canvas id="completionTrendChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        Staff Performance
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="chart-container">
+                                            <canvas id="staffPerformanceChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        Detailed Task Report
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover" id="reportsTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>SL No.</th>
+                                                        <th>Task</th>
+                                                        <th>Given By</th>
+                                                        <th>Given To</th>
+                                                        <th>Allocation Date</th>
+                                                        <th>Target Date</th>
+                                                        <th>Completion Date</th>
+                                                        <th>Status</th>
+                                                        <th>Priority</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!-- Report data will be populated here -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div class="modal fade" id="taskModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="taskModalTitle">Add New Task</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="taskForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="taskDetails" class="form-label">Task Details</label>
+                                <textarea class="form-control" id="taskDetails" rows="3" required></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="givenTo" class="form-label">Given To</label>
+                                <select class="form-select" id="givenTo" required>
+                                    <option value="">Select Staff</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="dateAllocation" class="form-label">Date of Allocation</label>
+                                <input type="date" class="form-control" id="dateAllocation" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="targetDate" class="form-label">Target Date for Completion</label>
+                                <input type="date" class="form-control" id="targetDate" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="priority" class="form-label">Priority</label>
+                                <select class="form-select" id="priority" required>
+                                    <option value="">Select Priority</option>
+                                    <option value="High">High</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Low">Low</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-select" id="status" required>
+                                    <option value="">Select Status</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="stepsTaken" class="form-label">Steps Taken for Completion</label>
+                                <textarea class="form-control" id="stepsTaken" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="lastUpdated" class="form-label">Last Updated On</label>
+                                <input type="date" class="form-control" id="lastUpdated">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="nextUpdate" class="form-label">Next Updation Date</label>
+                                <input type="date" class="form-control" id="nextUpdate">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveTaskBtn">Save Task</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Staff Modal -->
+    <div class="modal fade" id="staffModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staffModalTitle">Add New Staff</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="staffForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="staffName" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="staffName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="staffEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="staffEmail" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="staffPhone" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="staffPhone">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="staffDepartment" class="form-label">Department</label>
+                                <input type="text" class="form-control" id="staffDepartment">
+                            </div>
+                            <div class="col-12">
+                                <label for="staffPassword" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="staffPassword" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveStaffBtn">Save Staff</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Admin Modal -->
+    <div class="modal fade" id="adminModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="adminModalTitle">Add New Admin</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="adminForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="adminName" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="adminName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="adminEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="adminEmail" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="adminPhone" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="adminPhone">
+                            </div>
+                            <div class="col-12">
+                                <label for="adminPassword" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="adminPassword" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveAdminBtn">Save Admin</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
