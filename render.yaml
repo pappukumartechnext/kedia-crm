@@ -5,7 +5,7 @@ services:
     runtime: node
     plan: free
     region: oregon  # or your preferred region
-    # rootDirectory: backend
+    rootDirectory: backend
     buildCommand: npm install
     startCommand: npm start
     envVars:
@@ -16,3 +16,4 @@ services:
       - key: MONGODB_URI
 
         sync: false
+
