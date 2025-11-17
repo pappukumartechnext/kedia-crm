@@ -1,5 +1,5 @@
 // API configuration - Update this with your Render backend URL
-const API_BASE_URL = 'https://kedia-crm.onrender.com/api'; // Replace with your actual Render backend URL
+const API_BASE_URL = 'https://kedia-crm-backend.onrender.com/api'; // Replace with your actual Render backend URL
 
 // API service functions
 const apiService = {
@@ -980,3 +980,4 @@ function showAlert(message, type) {
     }, 5000);
 
 }
+
