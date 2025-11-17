@@ -5,7 +5,7 @@ services:
     runtime: node
     plan: free
     region: oregon  # or your preferred region
-    rootDirectory: main
+    # rootDirectory: backend
     buildCommand: npm install
     startCommand: npm start
     envVars:
